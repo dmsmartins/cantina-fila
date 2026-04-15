@@ -326,21 +326,16 @@
 
 <script>
 // ─── CONFIGURAÇÃO ───────────────────────────────────────────────────────────
-// Podes definir o modo via URL: ?modo=entrada ou ?modo=saida
-// Ou configurar os URLs do Power Automate no painel de admin (⚙ config)
+const STORAGE_KEY = 'cantina_token';
+const STORAGE_TS  = 'cantina_entrada_ts';
+const TIMEOUT_MIN = 30;
 
-const STORAGE_KEY   = 'cantina_token';
-const STORAGE_TS    = 'cantina_entrada_ts';
-const TIMEOUT_MIN   = 30; // minutos até considerar registo expirado
+// Endpoint Google Apps Script — único para entrada e saída
+const API_URL = 'https://script.google.com/macros/s/AKfycbxBxK6aU4Z7MjOB7Ycxfv1yYH9J00EOkVvz4aDeWr4FpAseKRxff7XBLtpNLARjQvGI4w/exec';
 
-// Detecta modo pelo URL param
+// Detecta modo pelo URL param: ?modo=entrada ou ?modo=saida
 const urlParams = new URLSearchParams(window.location.search);
-const MODO = urlParams.get('modo') || localStorage.getItem('cantina_cfg_modo') || 'entrada';
-
-// URLs dos flows (configuráveis no painel admin ou aqui directamente)
-function getCfg(key, fallback = '') {
-  return localStorage.getItem(key) || fallback;
-}
+const MODO = urlParams.get('modo') || 'entrada';
 
 // ─── ESTADO ─────────────────────────────────────────────────────────────────
 let state = 'idle'; // idle | loading | ok | erro
@@ -348,7 +343,6 @@ let state = 'idle'; // idle | loading | ok | erro
 // ─── INIT ───────────────────────────────────────────────────────────────────
 window.onload = () => {
   updateModeIndicator();
-  loadConfigPanel();
 
   if (MODO === 'saida') {
     renderSaida();
@@ -472,24 +466,20 @@ async function registarEntrada() {
 
   renderLoading('A registar entrada...');
 
-  const urlEntrada = getCfg('cantina_cfg_url_entrada');
-
   try {
-    if (urlEntrada) {
-      await fetch(urlEntrada, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token_id:    token,
-          entrada_ts:  new Date(ts).toISOString(),
-          modo:        'entrada'
-        })
-      });
-    }
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token_id:   token,
+        entrada_ts: new Date(ts).toISOString(),
+        modo:       'entrada'
+      })
+    });
     renderEntradaOk(token);
   } catch (e) {
-    // Mesmo com erro de rede, o token está guardado localmente.
-    // Na próxima vez que houver ligação, pode ser sincronizado.
+    // Token guardado localmente mesmo sem rede
     renderEntradaOk(token, true);
   }
 }
@@ -501,22 +491,19 @@ async function registarSaida(token, entradaTs) {
 
   renderLoading('A registar saída...');
 
-  const urlSaida = getCfg('cantina_cfg_url_saida');
-
   try {
-    if (urlSaida) {
-      await fetch(urlSaida, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token_id:    token,
-          saida_ts:    new Date(saidaTs).toISOString(),
-          entrada_ts:  new Date(entradaTs).toISOString(),
-          tempo_espera_min: minutos,
-          modo:        'saida'
-        })
-      });
-    }
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token_id:         token,
+        saida_ts:         new Date(saidaTs).toISOString(),
+        entrada_ts:       new Date(entradaTs).toISOString(),
+        tempo_espera_min: minutos,
+        modo:             'saida'
+      })
+    });
     clearToken();
     renderSaidaOk(minutos, segundos);
   } catch (e) {
@@ -584,24 +571,7 @@ function clearToken() {
   localStorage.removeItem(STORAGE_TS);
 }
 
-// ─── CONFIG PANEL ────────────────────────────────────────────────────────────
-function toggleConfig() {
-  document.getElementById('configPanel').classList.toggle('open');
-}
 
-function loadConfigPanel() {
-  document.getElementById('cfgUrlEntrada').value = getCfg('cantina_cfg_url_entrada');
-  document.getElementById('cfgUrlSaida').value   = getCfg('cantina_cfg_url_saida');
-  document.getElementById('cfgModo').value       = getCfg('cantina_cfg_modo');
-}
-
-function saveConfig() {
-  localStorage.setItem('cantina_cfg_url_entrada', document.getElementById('cfgUrlEntrada').value.trim());
-  localStorage.setItem('cantina_cfg_url_saida',   document.getElementById('cfgUrlSaida').value.trim());
-  localStorage.setItem('cantina_cfg_modo',        document.getElementById('cfgModo').value.trim());
-  document.getElementById('configPanel').classList.remove('open');
-  window.location.reload();
-}
 </script>
 </body>
 </html>
