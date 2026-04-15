@@ -100,17 +100,8 @@
   }
 
   .btn:active { transform: scale(0.97); opacity: 0.85; }
-
-  .btn-entrada {
-    background: var(--accent);
-    color: #0f0f11;
-  }
-
-  .btn-saida {
-    background: var(--accent2);
-    color: #0f0f11;
-  }
-
+  .btn-entrada { background: var(--accent); color: #0f0f11; }
+  .btn-saida   { background: var(--accent2); color: #0f0f11; }
   .btn-reset {
     background: transparent;
     color: var(--muted);
@@ -165,10 +156,10 @@
     margin-bottom: 20px;
   }
 
-  .badge-entrada { background: rgba(232,255,71,0.1); color: var(--accent); }
-  .badge-saida   { background: rgba(71,200,255,0.1); color: var(--accent2); }
-  .badge-ok      { background: rgba(71,255,176,0.1); color: var(--green); }
-  .badge-erro    { background: rgba(255,107,71,0.1); color: var(--red); }
+  .badge-entrada { background: rgba(232,255,71,0.1);  color: var(--accent); }
+  .badge-saida   { background: rgba(71,200,255,0.1);  color: var(--accent2); }
+  .badge-ok      { background: rgba(71,255,176,0.1);  color: var(--green); }
+  .badge-erro    { background: rgba(255,107,71,0.1);  color: var(--red); }
 
   .time-display {
     font-family: 'Syne', sans-serif;
@@ -196,74 +187,6 @@
     margin: 0 auto 20px;
   }
 
-  /* CONFIG PANEL (apenas para desenvolvimento/admin) */
-  .config-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    cursor: pointer;
-    z-index: 10;
-    transition: border-color 0.2s;
-  }
-  .config-toggle:hover { border-color: var(--muted); }
-
-  .config-panel {
-    position: fixed;
-    bottom: 60px;
-    right: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    width: 280px;
-    z-index: 10;
-    display: none;
-    font-size: 13px;
-  }
-
-  .config-panel.open { display: block; }
-
-  .config-panel h4 {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    margin-bottom: 12px;
-    color: var(--muted);
-  }
-
-  .config-field { margin-bottom: 12px; }
-  .config-field label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
-  .config-field input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 10px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-  }
-  .config-field input:focus { outline: 1px solid var(--accent); }
-
-  .config-save {
-    width: 100%;
-    padding: 10px;
-    background: var(--accent);
-    color: #0f0f11;
-    border: none;
-    border-radius: 6px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
   .mode-indicator {
     position: fixed;
     top: 16px;
@@ -275,9 +198,7 @@
     z-index: 10;
   }
 
-  .mode-indicator span {
-    color: var(--accent);
-  }
+  .mode-indicator span { color: var(--accent); }
 
   @keyframes pop {
     from { transform: scale(0.6); opacity: 0; }
@@ -300,80 +221,38 @@
 
 <div class="mode-indicator" id="modeIndicator"></div>
 
-<!-- CARD PRINCIPAL -->
 <div class="card" id="mainCard">
   <div id="appContent"></div>
 </div>
 
-<!-- CONFIG (admin) -->
-<div class="config-toggle" id="configToggle" onclick="toggleConfig()">⚙ config</div>
-<div class="config-panel" id="configPanel">
-  <h4>Configuração (admin)</h4>
-  <div class="config-field">
-    <label>URL Power Automate — Entrada</label>
-    <input type="text" id="cfgUrlEntrada" placeholder="https://prod-xx.westeurope.logic.azure.com/...">
-  </div>
-  <div class="config-field">
-    <label>URL Power Automate — Saída</label>
-    <input type="text" id="cfgUrlSaida" placeholder="https://prod-xx.westeurope.logic.azure.com/...">
-  </div>
-  <div class="config-field">
-    <label>Modo</label>
-    <input type="text" id="cfgModo" placeholder="entrada | saida" value="">
-  </div>
-  <button class="config-save" onclick="saveConfig()">Guardar</button>
-</div>
-
 <script>
-// ─── CONFIGURAÇÃO ───────────────────────────────────────────────────────────
+// ─── CONFIGURAÇÃO ────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'cantina_token';
 const STORAGE_TS  = 'cantina_entrada_ts';
 const TIMEOUT_MIN = 30;
 
-// Endpoint Google Apps Script — único para entrada e saída
-const API_URL = 'https://script.google.com/macros/s/AKfycbyp7eiNUEyZE5y_xJTG1gpnxMMy6iCMSPwKxD9VtPTCbtHAGKsrfakqXZZ7xt9C2YT8/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzZhDtr0jKtAkFn2SftUmu6rJ9ASB-0FZXnrKikQ4OftaNMSeivoqYJY_Sx_QUpDGK-/exec';
 
-// Detecta modo pelo URL param: ?modo=entrada ou ?modo=saida
 const urlParams = new URLSearchParams(window.location.search);
 const MODO = urlParams.get('modo') || 'entrada';
 
-// ─── ESTADO ─────────────────────────────────────────────────────────────────
-let state = 'idle'; // idle | loading | ok | erro
-
-// ─── INIT ───────────────────────────────────────────────────────────────────
+// ─── INIT ────────────────────────────────────────────────────────────────────
 window.onload = () => {
-  updateModeIndicator();
-
-  if (MODO === 'saida') {
-    renderSaida();
-  } else {
-    renderEntrada();
-  }
+  document.getElementById('modeIndicator').innerHTML = `QR <span>${MODO.toUpperCase()}</span>`;
+  MODO === 'saida' ? renderSaida() : renderEntrada();
 };
-
-function updateModeIndicator() {
-  const el = document.getElementById('modeIndicator');
-  el.innerHTML = `QR <span>${MODO.toUpperCase()}</span>`;
-}
 
 // ─── RENDER: ENTRADA ─────────────────────────────────────────────────────────
 function renderEntrada() {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-entrada fade-in';
+  document.getElementById('mainCard').className = 'card state-entrada fade-in';
 
-  // Verifica se já há token ativo (entrada já registada)
   const token = localStorage.getItem(STORAGE_KEY);
   const ts    = localStorage.getItem(STORAGE_TS);
 
   if (token && ts) {
-    const minutos = Math.floor((Date.now() - parseInt(ts)) / 60000);
-    if (minutos < TIMEOUT_MIN) {
-      renderJaNaFila(token, minutos);
-      return;
-    } else {
-      // Token expirado — limpa
-      clearToken();
-    }
+    const min = Math.floor((Date.now() - parseInt(ts)) / 60000);
+    if (min < TIMEOUT_MIN) { renderJaNaFila(token, min); return; }
+    clearToken();
   }
 
   document.getElementById('appContent').innerHTML = `
@@ -387,10 +266,8 @@ function renderEntrada() {
 
 // ─── RENDER: JÁ NA FILA ──────────────────────────────────────────────────────
 function renderJaNaFila(token, minutos) {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-entrada fade-in';
+  document.getElementById('mainCard').className = 'card state-entrada fade-in';
   const codigo = token.slice(-4).toUpperCase();
-
   document.getElementById('appContent').innerHTML = `
     <span class="icon">⏳</span>
     <div class="status-badge badge-entrada">Na fila</div>
@@ -407,26 +284,17 @@ function renderJaNaFila(token, minutos) {
 
 // ─── RENDER: SAÍDA ───────────────────────────────────────────────────────────
 function renderSaida() {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-saida fade-in';
+  document.getElementById('mainCard').className = 'card state-saida fade-in';
 
   const token = localStorage.getItem(STORAGE_KEY);
   const ts    = localStorage.getItem(STORAGE_TS);
 
-  if (!token || !ts) {
-    renderSemEntrada();
-    return;
-  }
+  if (!token || !ts) { renderSemEntrada(); return; }
 
-  const minutos = Math.floor((Date.now() - parseInt(ts)) / 60000);
-  if (minutos >= TIMEOUT_MIN) {
-    clearToken();
-    renderSemEntrada();
-    return;
-  }
+  const min = Math.floor((Date.now() - parseInt(ts)) / 60000);
+  if (min >= TIMEOUT_MIN) { clearToken(); renderSemEntrada(); return; }
 
   const codigo = token.slice(-4).toUpperCase();
-
   document.getElementById('appContent').innerHTML = `
     <span class="icon">✅</span>
     <div class="status-badge badge-saida">Saída — Caixa</div>
@@ -444,9 +312,7 @@ function renderSaida() {
 
 // ─── RENDER: SEM ENTRADA ─────────────────────────────────────────────────────
 function renderSemEntrada() {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-saida fade-in';
-
+  document.getElementById('mainCard').className = 'card state-saida fade-in';
   document.getElementById('appContent').innerHTML = `
     <span class="icon">🤔</span>
     <div class="status-badge badge-saida">Saída — Caixa</div>
@@ -466,44 +332,36 @@ async function registarEntrada() {
 
   renderLoading('A registar entrada...');
 
+  const params = new URLSearchParams({
+    token_id:   token,
+    entrada_ts: new Date(ts).toISOString(),
+    modo:       'entrada'
+  });
+
   try {
-    await fetch(API_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token_id:   token,
-        entrada_ts: new Date(ts).toISOString(),
-        modo:       'entrada'
-      })
-    });
+    await fetch(API_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     renderEntradaOk(token);
   } catch (e) {
-    // Token guardado localmente mesmo sem rede
     renderEntradaOk(token, true);
   }
 }
 
 async function registarSaida(token, entradaTs) {
-  const saidaTs   = Date.now();
-  const minutos   = Math.floor((saidaTs - entradaTs) / 60000);
-  const segundos  = Math.floor((saidaTs - entradaTs) / 1000) % 60;
+  const saidaTs  = Date.now();
+  const minutos  = Math.floor((saidaTs - entradaTs) / 60000);
+  const segundos = Math.floor((saidaTs - entradaTs) / 1000) % 60;
 
   renderLoading('A registar saída...');
 
+  const params = new URLSearchParams({
+    token_id:         token,
+    saida_ts:         new Date(saidaTs).toISOString(),
+    tempo_espera_min: minutos,
+    modo:             'saida'
+  });
+
   try {
-    await fetch(API_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token_id:         token,
-        saida_ts:         new Date(saidaTs).toISOString(),
-        entrada_ts:       new Date(entradaTs).toISOString(),
-        tempo_espera_min: minutos,
-        modo:             'saida'
-      })
-    });
+    await fetch(API_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     clearToken();
     renderSaidaOk(minutos, segundos);
   } catch (e) {
@@ -523,10 +381,8 @@ function renderLoading(msg) {
 
 // ─── RENDER: ENTRADA OK ──────────────────────────────────────────────────────
 function renderEntradaOk(token, offline = false) {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-ok fade-in';
+  document.getElementById('mainCard').className = 'card state-ok fade-in';
   const codigo = token.slice(-4).toUpperCase();
-
   document.getElementById('appContent').innerHTML = `
     <span class="icon">🎟️</span>
     <div class="status-badge badge-ok">Entrada registada</div>
@@ -535,23 +391,20 @@ function renderEntradaOk(token, offline = false) {
     <div class="token-display">
       <div class="token-label">O teu código</div>
       <div class="token-code">${codigo}</div>
-      <div class="token-hint">Mostra este ecrã na caixa${offline ? ' · (modo offline — registo local)' : ''}</div>
+      <div class="token-hint">Mostra este ecrã na caixa${offline ? ' · (modo offline)' : ''}</div>
     </div>
   `;
 }
 
 // ─── RENDER: SAÍDA OK ────────────────────────────────────────────────────────
 function renderSaidaOk(minutos, segundos, offline = false) {
-  const card = document.getElementById('mainCard');
-  card.className = 'card state-ok fade-in';
-  const tempoStr = `${minutos}m ${segundos}s`;
-
+  document.getElementById('mainCard').className = 'card state-ok fade-in';
   document.getElementById('appContent').innerHTML = `
     <span class="icon">🎉</span>
     <div class="status-badge badge-ok">Registo completo</div>
     <h1>Obrigado!</h1>
     <p class="sub">Tempo de espera registado:</p>
-    <div class="time-display">${tempoStr}</div>
+    <div class="time-display">${minutos}m ${segundos}s</div>
     <div class="time-label">tempo na fila</div>
     <br><br>
     <p class="sub" style="font-size:12px">${offline ? 'Registo guardado localmente.' : 'Dados guardados. Bom apetite! 🍴'}</p>
@@ -570,8 +423,6 @@ function clearToken() {
   localStorage.removeItem(STORAGE_KEY);
   localStorage.removeItem(STORAGE_TS);
 }
-
-
 </script>
 </body>
 </html>
